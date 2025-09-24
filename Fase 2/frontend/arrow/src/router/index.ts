@@ -7,6 +7,7 @@ const routes = [
             path: '/',
             name: 'Home',
             component: () => import('../views/HomeView.vue'),
+            alias: ['/home'],
             meta: { requiresAuth: false }
         },
         {
@@ -22,10 +23,10 @@ const routes = [
             meta: { requiresAuth: true }
         },
         {
-            path: '/NoFound',
+            path: '/:pathMatch(.*)*',
             name: 'NoFound',
             component: () => import('../views/NotFoundView.vue'),
-            meta: { requiresAuth: true }
+            meta: { requiresAuth: false }
         },
 ];
 
@@ -37,14 +38,18 @@ export const router = createRouter({
 router.beforeEach(async (to) => {
     const auth = useAuthStoreLocal()
     const isAuth = auth.isAuthenticated
+    //Para que todas las rutas sean LOWERCASE
+    if (to.fullPath !== to.fullPath.toLowerCase()) {
+        return { path: to.fullPath.toLowerCase(), query: to.query, hash: to.hash }
+    }
 
     if (to.meta.requiresAuth && !isAuth) {
         auth.returnUrl = to.fullPath
         return { name: 'Login', query: { redirect: to.fullPath } }
     }
     // Si la ruta es el login y ya está logueado, redirige al dashboard
-    if (isAuth && to.name === 'Login') {
-        return { name: '/' }
+    if (isAuth && to.name === 'Report') {
+        return { name: 'Report' }
     }
     return true;
 })
