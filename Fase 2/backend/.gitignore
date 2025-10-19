@@ -1,0 +1,48 @@
+# --- Sistema / IDE ---
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+
+# --- Node / TypeScript ---
+**/node_modules/
+**/dist/
+**/build/
+**/out/
+**/.tsbuildinfo
+**/.eslintcache
+**/.cache/
+**/coverage/
+**/.nyc_output/
+
+# --- Vite / Frontend ---
+**/.vite/
+**/vite.svg   # opcional
+**/public/*.map
+
+# --- Logs / procesos ---
+logs/
+**/*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+**/*.pid
+**/*.pid.lock
+
+# --- Entornos (muy importante) ---
+# No subas secretos
+.env
+.env.*
+!.env.example
+
+# --- BDs / dumps locales ---
+**/*.sql
+**/*.sqlite*
+**/*.db
+
+# --- Archivos temporales ---
+*.tmp
+*.temp
+*.swp
+*.swo
