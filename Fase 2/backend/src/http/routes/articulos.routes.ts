@@ -8,12 +8,12 @@ export async function articulosRoutes(app: FastifyInstance) {
         return articulosRepo.list({
             page: Number(url.searchParams.get("page") ?? 1),
             pageSize: Number(url.searchParams.get("pageSize") ?? 20),
-            empresa: url.searchParams.get("empresa") ?? undefined,
-            codigo: url.searchParams.get("codigo") ?? undefined,
-            color: url.searchParams.get("color") ?? undefined,
-            codigo_color: url.searchParams.get("codigo_color") ?? undefined,
-            categoria: url.searchParams.get("categoria") ?? undefined,
-            genero: url.searchParams.get("genero") ?? undefined
+            empresa: url.searchParams.get("empresa") ?? '',
+            codigo: url.searchParams.get("codigo") ?? '',
+            color: url.searchParams.get("color") ?? '',
+            codigo_color: url.searchParams.get("codigo_color") ?? '',
+            categoria: url.searchParams.get("categoria") ?? '',
+            genero: url.searchParams.get("genero") ?? ''
         });
     });
 
@@ -26,7 +26,10 @@ export async function articulosRoutes(app: FastifyInstance) {
 
     app.post("/api/articulos", async (req, reply) => {
         const parsed = ArticuloCreateSchema.safeParse(req.body);
-        if (!parsed.success) return reply.code(400).send(parsed.error.flatten());
+        if (!parsed.success) {
+            const errorMessages = parsed.error.format();
+            return reply.code(400).send(errorMessages);
+        }
         const created = await articulosRepo.create(parsed.data as any);
         return reply.code(201).send(created);
     });

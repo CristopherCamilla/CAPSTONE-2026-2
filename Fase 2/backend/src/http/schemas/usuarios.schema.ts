@@ -14,4 +14,3 @@ export const UsuarioUpdateSchema = UsuarioCreateSchema.partial()
     .extend({ password: z.string().min(6).optional() });
 
 export type UsuarioCreate = z.infer<typeof UsuarioCreateSchema>;
-export type UsuarioUpdate = z.infer<typeof UsuarioUpdateSchema>;

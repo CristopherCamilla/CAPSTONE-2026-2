@@ -1,7 +1,20 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
 
-// https://vite.dev/config/
+import { fileURLToPath } from 'node:url';
+
+// Configuración de alias
 export default defineConfig({
-  plugins: [vue()],
-})
+    plugins: [vue()],
+    resolve: {
+        alias: {
+            "@": fileURLToPath(new URL("./src", import.meta.url))
+        }
+    },
+    server: {
+        proxy: {
+            "/api": { target: "http://localhost:3000", changeOrigin: true },
+            "/health": { target: "http://localhost:3000", changeOrigin: true }
+        }
+    }
+});

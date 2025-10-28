@@ -15,4 +15,3 @@ export const ArticuloCreateSchema = z.object({
 export const ArticuloUpdateSchema = ArticuloCreateSchema.partial();
 
 export type ArticuloCreate = z.infer<typeof ArticuloCreateSchema>;
-export type ArticuloUpdate = z.infer<typeof ArticuloUpdateSchema>;

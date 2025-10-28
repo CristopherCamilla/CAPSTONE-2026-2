@@ -9,6 +9,7 @@ import { usuariosRoutes } from "./routes/usuarios.routes.js";
 import { articulosRoutes } from "./routes/articulos.routes.js";
 import { categoriasRoutes } from "./routes/categorias.routes.js";
 import { stockRoutes } from "./routes/stock.routes.js";
+import { proyeccionVentasRoutes } from "./routes/proyeccionVentas.routes.js";
 
 type R = { method: string; url: string; };
 const routesRegistry: R[] = [];
@@ -55,6 +56,7 @@ async function main() {
     await app.register(articulosRoutes);
     await app.register(categoriasRoutes);
     await app.register(stockRoutes);
+    await app.register(proyeccionVentasRoutes);
 
     const port = Number(process.env.PORT ?? 3000);
     await app.listen({ port, host: "0.0.0.0" });
