@@ -18,9 +18,29 @@ const routes = [
         },
         {
             path: '/report',
-            name: 'Report',
             component: () => import('../views/ReportView.vue'),
-            meta: { requiresAuth: false }
+            meta: { requiresAuth: false },
+            children: [
+                { path: '', redirect: { name: 'ReportResumen' } },
+                {
+                    path: 'resumen',
+                    name: 'ReportResumen',
+                    component: () => import('@/views/report/ResumenSub.vue'),
+                    meta: { keepAlive: true, requiresAuth: false }
+                },
+                {
+                    path: 'detalle',
+                    name: 'ReportDetalle',
+                    component: () => import('@/views/report/DetalleSub.vue'),
+                    meta: { keepAlive: true, requiresAuth: false }
+                },
+                {
+                    path: 'productos',
+                    name: 'ReportProductos',
+                    component: () => import('@/views/report/ReportProductosSub.vue'), // o tu nuevo archivo
+                    meta: { keepAlive: true, requiresAuth: false }
+                }
+            ]
         },
         {
             path: '/:pathMatch(.*)*',
@@ -34,6 +54,19 @@ export const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes,
 });
+
+router.onError((err, to) => {
+    const msg = String((err as Error)?.message || '')
+    if (
+        msg.includes('Failed to fetch dynamically imported module') ||
+        msg.includes('Importing a module script failed') ||
+        msg.includes('ChunkLoadError')
+    ) {
+        // recarga la app para que baje el nuevo index.html y los nuevos chunks
+        window.location.reload()
+    }
+})
+
 //Guard Global
 router.beforeEach(async (to) => {
     const auth = useAuthStoreLocal()
