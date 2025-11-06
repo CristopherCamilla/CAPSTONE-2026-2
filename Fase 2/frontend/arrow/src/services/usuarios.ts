@@ -1,28 +1,51 @@
-import { api, type Usuario, type Paged } from "@/lib/api";
+import { http } from '@/lib/http'
+import type { Usuario, Paged } from '@/lib/api'
+
+// Query de listado (todas opcionales)
+type ListParams = {
+    page?: number
+    pageSize?: number
+    search?: string
+}
+
+// Payload para crear (sin id/fechas, con password)
+type CreatePayload =
+    Omit<Usuario, 'id' | 'fecha_registro' | 'ultima_conexion'> & { password: string }
+
+// Patch para actualizar (todo opcional, password opcional)
+type UpdatePayload =
+    Partial<Omit<Usuario, 'id' | 'fecha_registro' | 'ultima_conexion'>> & {
+    password?: string
+}
 
 export const usuariosService = {
-    list(params?: { page?: number; pageSize?: number; search?: string }) {
-        const q = new URLSearchParams();
-        if (params?.page) q.set("page", String(params.page));
-        if (params?.pageSize) q.set("pageSize", String(params.pageSize));
-        if (params?.search) q.set("search", params.search);
-        const qs = q.toString() ? `?${q.toString()}` : "";
-        return api.get<Paged<Usuario>>(`/api/usuarios${qs}`);
+    list(params?: ListParams) {
+        return http
+            .get<Paged<Usuario>>('/api/usuarios', { params })
+            .then(r => r.data)
     },
 
     get(id: number) {
-        return api.get<Usuario>(`/api/usuarios/${id}`);
+        return http
+            .get<Usuario>(`/api/usuarios/${id}`)
+            .then(r => r.data)
     },
 
-    create(payload: Omit<Usuario, "id" | "fecha_registro" | "ultima_conexion"> & { password: string }) {
-        return api.post<Usuario>("/api/usuarios", payload);
+    create(payload: CreatePayload) {
+        return http
+            .post<Usuario>('/api/usuarios', payload)
+            .then(r => r.data)
     },
 
-    update(id: number, patch: Partial<Usuario> & { password?: string }) {
-        return api.put<Usuario>(`/api/usuarios/${id}`, patch);
+    update(id: number, patch: UpdatePayload) {   // ← aquí tipado, adiós "any"
+        return http
+            .put<Usuario>(`/api/usuarios/${id}`, patch)
+            .then(r => r.data)
     },
 
     remove(id: number) {
-        return api.del<{ ok: boolean }>(`/api/usuarios/${id}`);
-    }
-};
+        return http
+            .delete<{ ok: boolean }>(`/api/usuarios/${id}`)
+            .then(r => r.data)
+    },
+}

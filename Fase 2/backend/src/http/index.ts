@@ -1,10 +1,13 @@
+// src/http/index.ts
 import Fastify from "fastify";
 import fastifyCors from "@fastify/cors";
-import fastifyStatic from "@fastify/static";
 import "dotenv/config";
-import { fileURLToPath } from "url";
-import { dirname, resolve } from "path";
-//Rutas
+
+// (opcional en DEV si sirves estáticos desde el backend)
+// import fastifyStatic from "@fastify/static";
+// import { fileURLToPath } from "url";
+// import { dirname, resolve } from "path";
+
 import { usuariosRoutes } from "./routes/usuarios.routes.js";
 import { articulosRoutes } from "./routes/articulos.routes.js";
 import { categoriasRoutes } from "./routes/categorias.routes.js";
@@ -12,47 +15,35 @@ import { stockRoutes } from "./routes/stock.routes.js";
 import { proyeccionVentasRoutes } from "./routes/proyeccionVentas.routes.js";
 import { reportesRoutes } from "./routes/reportes.routes.js";
 
-type R = { method: string; url: string; };
-const routesRegistry: R[] = [];
-
-function onlyGetRoutes(routes: R[]) {
-    return routes
-        .filter(r => r.method.includes("GET"))
-        .sort((a, b) => a.url.localeCompare(b.url));
-}
+const isProd = process.env.NODE_ENV === "production";
+const PORT   = Number(process.env.PORT ?? 3001);
 
 async function main() {
     const app = Fastify({ logger: true });
 
-    // Captura rutas registradas
-    app.addHook("onRoute", (route) => {
-        const method = Array.isArray(route.method) ? route.method.join(",") : (route.method as string);
-        routesRegistry.push({ method, url: route.url });
-    });
-
+    // ⬇️ AQUÍ VA CORS (después de crear app, antes de rutas)
     await app.register(fastifyCors, {
-        origin: ["http://localhost:5173"],
-        credentials: true
+        // En PRODUCCIÓN: mismo dominio detrás de Apache → CORS realmente no se necesita.
+        // Si igual quieres restringir, pon tu dominio real:
+        origin: isProd ? ["https://midominio.com"] : ["http://localhost:5173"],
+        credentials: true,
     });
 
-    // Servir /public como estático (index.html en /)
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = dirname(__filename);
-    await app.register(fastifyStatic, {
-        root: resolve(__dirname, "../../public"),
-        prefix: "/",           // sirve en la raíz
-        wildcard: false,
-        index: ["index.html"]  // al abrir "/" entrega index.html
-    });
+    // (opcional) Servir estáticos SOLO en desarrollo
+    // if (!isProd) {
+    //   const __filename = fileURLToPath(import.meta.url);
+    //   const __dirname  = dirname(__filename);
+    //   await app.register(fastifyStatic, {
+    //     root: resolve(__dirname, "../../public"),
+    //     prefix: "/",
+    //     index: ["index.html"],
+    //   });
+    // }
 
-    // Endpoint JSON con rutas detectadas
-    app.get("/__routes", async () => ({
-        health: "/health",
-        endpoints: onlyGetRoutes(routesRegistry)
-    }));
+    // Health (útil con ProxyPass /api)
+    app.get("/api/health", async () => ({ ok: true, ts: Date.now() }));
 
-    app.get("/health", async () => ({ ok: true, ts: Date.now() }));
-
+    // Tus rutas API
     await app.register(usuariosRoutes);
     await app.register(articulosRoutes);
     await app.register(categoriasRoutes);
@@ -60,9 +51,8 @@ async function main() {
     await app.register(proyeccionVentasRoutes);
     await app.register(reportesRoutes);
 
-    const port = Number(process.env.PORT ?? 3000);
-    await app.listen({ port, host: "0.0.0.0" });
-    app.log.info(`API on http://localhost:${port}`);
+    await app.listen({ port: PORT, host: "0.0.0.0" });
+    app.log.info(`API http://localhost:${PORT} NODE_ENV=${process.env.NODE_ENV}`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

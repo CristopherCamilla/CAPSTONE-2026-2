@@ -6,10 +6,19 @@ import bcrypt from "bcryptjs";
 export async function usuariosRoutes(app: FastifyInstance) {
     app.get("/api/usuarios", async (req) => {
         const url = new URL((req as any).raw.url!, "http://x");
-        const page = Number(url.searchParams.get("page") ?? 1);
+
+        const page     = Number(url.searchParams.get("page")     ?? 1);
         const pageSize = Number(url.searchParams.get("pageSize") ?? 20);
-        const search = url.searchParams.get("search") ?? undefined;
-        return usuariosRepo.list({ page, pageSize, search });
+        const s        = url.searchParams.get("search"); // string | null
+
+        // arma el objeto SIN 'search' cuando no existe o está vacío
+        const params: { page?: number; pageSize?: number; search?: string } = {
+            page,
+            pageSize,
+            ...(s && s.trim() ? { search: s } : {}),
+        };
+
+        return usuariosRepo.list(params);
     });
 
     app.get("/api/usuarios/:id", async (req, reply) => {

@@ -1,3 +1,4 @@
+// stores/usuarios.ts
 import { defineStore } from "pinia";
 import { usuariosService } from "@/services/usuarios";
 import type { Usuario } from "@/lib/api";
@@ -22,7 +23,7 @@ export const useUsuariosStore = defineStore("usuarios", {
                 this.items = res.items;
                 this.total = res.total;
             } catch (e: any) {
-                this.error = e.message ?? "Error cargando usuarios";
+                this.error = e?.message || "Error cargando usuarios"; // <- axios ya normaliza
             } finally {
                 this.loading = false;
             }

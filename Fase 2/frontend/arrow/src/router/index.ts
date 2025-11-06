@@ -54,8 +54,8 @@ export const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes,
 });
-
-router.onError((err, to) => {
+//Errores
+router.onError((err) => {
     const msg = String((err as Error)?.message || '')
     if (
         msg.includes('Failed to fetch dynamically imported module') ||
