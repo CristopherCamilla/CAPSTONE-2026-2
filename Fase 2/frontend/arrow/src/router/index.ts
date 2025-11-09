@@ -1,14 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import {useAuthStoreLocal} from "../stores/authLocal.ts";
+import {useAuth } from "../stores/auth.ts";
 
 
 const routes = [
         {
             path: '/',
-            name: 'Home',
-            component: () => import('../views/HomeView.vue'),
-            alias: ['/home'],
-            meta: { requiresAuth: false }
+            redirect: { name: 'Login' },
+            // name: 'Home',
+            // component: () => import('../views/HomeView.vue'),
+            // alias: ['/home'],
+            // meta: { requiresAuth: false }
         },
         {
             path: '/login',
@@ -69,7 +70,7 @@ router.onError((err) => {
 
 //Guard Global
 router.beforeEach(async (to) => {
-    const auth = useAuthStoreLocal()
+    const auth = useAuth ()
     const isAuth = auth.isAuthenticated
     //Para que todas las rutas sean LOWERCASE
     if (to.fullPath !== to.fullPath.toLowerCase()) {

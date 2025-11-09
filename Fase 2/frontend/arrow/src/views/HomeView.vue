@@ -1,12 +1,16 @@
 <script setup lang="ts">
-
+import Button from 'primevue/button'
 </script>
 
 <template>
-  <div>
-    Soy una pagina de inicio
-  </div>
+  <div class="p-6 space-y-4">
+    <div class="rounded-2xl p-4 bg-emerald-500/10 border border-emerald-500/30">
+      <h1 class="text-xl font-semibold">Tailwind OK</h1>
+      <p class="text-sm text-[color:var(--muted)]">Colores cambian con el tema.</p>
+    </div>
 
+    <Button label="PrimeVue OK" icon="pi pi-check" />
+  </div>
 </template>
 
 <style scoped>

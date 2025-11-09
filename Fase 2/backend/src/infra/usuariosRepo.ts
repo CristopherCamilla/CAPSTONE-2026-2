@@ -85,5 +85,15 @@ export const usuariosRepo = {
     async remove(id: number) {
         await pool.execute("DELETE FROM usuarios WHERE id = ?", [id]);
         return { ok: true };
-    }
+    },
+
+    async findByEmail(email: string) {
+        const [rows] = await pool.query<UsuarioRow[]>(
+            `SELECT id, nombre, apellido, usuario, email, password, rol, estado, fecha_registro, ultima_conexion
+             FROM usuarios
+             WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))
+                 LIMIT 1`, [email]
+        );
+        return rows[0] ?? null;
+    },
 };

@@ -2,15 +2,26 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import './style.css'
 
-import { createPinia } from 'pinia';
+import { createPinia } from 'pinia'
 import { router } from './router'
 
-// aplicar tema guardado o del sistema ANTES de montar
+import PrimeVue from 'primevue/config'
+import Aura from '@primeuix/themes/aura'
+import 'primeicons/primeicons.css'
+
 const saved = localStorage.getItem('theme')
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-document.documentElement.setAttribute('data-theme', (saved ?? (prefersDark ? 'dark' : 'light')))
+document.documentElement.setAttribute('data-theme', saved ?? (prefersDark ? 'dark' : 'light'))
 
 const app = createApp(App)
-app.use(createPinia())
+const pinia = createPinia()
+
+app.use(pinia)
 app.use(router)
-app.mount('#app')
+app.use(PrimeVue, { theme: { preset: Aura } })
+
+// ⬇️ intenta levantar sesión de la cookie
+import { useAuth } from '@/stores/auth'
+useAuth(pinia).me().finally(() => {
+    app.mount('#app')
+})

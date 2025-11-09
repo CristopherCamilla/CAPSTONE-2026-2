@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root{
     --bg:#ffffff; --fg:#213547; --muted:#6b7280;
     --brand:#10B981; --brand-2:#14B8A6;
@@ -10,6 +12,5 @@
 html,body,#app{ height:100%; }
 body{ margin:0; background:var(--bg); color:var(--fg);
     font-family:system-ui,Avenir,Helvetica,Arial,sans-serif; }
-
 a{ color:var(--brand); text-decoration:none; }
 a:hover{ opacity:.9; }
