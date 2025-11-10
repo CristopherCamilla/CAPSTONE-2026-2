@@ -13,7 +13,8 @@ type User = {
 export const useAuth = defineStore('auth', {
     state: () => ({
         user: null as User,
-        loading: false as boolean,
+        loading: false,
+        error: '' as string,           // <-- agrega error
         returnUrl: null as string | null,
     }),
     getters: {
@@ -22,20 +23,29 @@ export const useAuth = defineStore('auth', {
     actions: {
         async login(email: string, password: string) {
             this.loading = true
+            this.error = ''
             try {
                 const { data } = await http.post('/api/auth/login', { email, password })
                 this.user = data.user
                 return true
+            } catch (e: any) {
+                this.user = null
+                this.error = e?.response?.status === 401
+                    ? 'Credenciales inválidas'
+                    : 'No se pudo iniciar sesión'
+                return false
             } finally {
                 this.loading = false
             }
         },
         async me() {
             try {
-                const { data } = await http.get('/api/auth/me')
-                this.user = data ?? null
+                const { data } = await http.get('/api/auth/session', {
+                    validateStatus: () => true, // nunca lanza por 401, etc.
+                });
+                this.user = data?.user ?? null;
             } catch {
-                this.user = null
+                this.user = null;
             }
         },
         async logout() {

@@ -5,7 +5,7 @@ import path from 'node:path'
 
 export default defineConfig({
     plugins: [vue(), tailwind()],
-    base: './',
+    base: '/',
     resolve: { alias: { '@': path.resolve(__dirname, 'src') } },
     server: {
         proxy: {

@@ -16,12 +16,14 @@ const isProd = env.NODE_ENV === 'production'
 const PORT = Number(env.PORT ?? 3001)
 
 async function main() {
-    const app = Fastify({ logger: true }) as FastifyInstanceWithConfig
+    const app = Fastify({ logger: true }) as FastifyInstanceWithConfig;
+    app.addHook('onRequest', async (req) => { (req as any).raw.connection.proxy = true });
+    (app as any).trustProxy = true;
 
     app.config = { env: env.NODE_ENV }
 
     await app.register(fastifyCors, {
-        origin: isProd ? ['https://midominio.com'] : ['http://localhost:5173'],
+        origin: env.NODE_ENV === 'production' ? ['https://midominio.com'] : ['http://localhost:5173'],
         credentials: true,
     })
 
@@ -52,14 +54,20 @@ async function main() {
     await app.register(proyeccionVentasRoutes)
     await app.register(reportesRoutes)
 
+    console.log(app.printRoutes())
+
     await app.listen({ port: PORT, host: '0.0.0.0' })
     app.log.info(`API http://localhost:${PORT} NODE_ENV=${env.NODE_ENV}`)
 }
 
-main().catch((e) => {
-    console.error(e)
-    process.exit(1)
-})
+// --- Ejecuta main() SOLO una vez ---
+if (process.env.__API_STARTED__ !== '1') {
+    process.env.__API_STARTED__ = '1'
+    main().catch((e) => {
+        console.error(e)
+        process.exit(1)
+    })
+}
 
 // ---- Tipos
 import type { FastifyInstance as FI } from 'fastify'

@@ -15,7 +15,7 @@ async function onSubmit(e: Event) {
   errorMsg.value = null
   try {
     const ok = await auth.login(email.value, password.value)
-    if (ok) router.push('/')
+    if (ok) router.push('/report')
   } catch (e:any) {
     errorMsg.value = e?.response?.data?.message || 'No se pudo iniciar sesión'
   }
@@ -29,26 +29,24 @@ async function onSubmit(e: Event) {
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
       <form class="space-y-6" @submit="onSubmit">
         <div>
-          <label for="email" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-100">Email</label>
+          <label for="email" class="block text-sm/6 font-medium text-[var(--fg)]">Email</label>
           <div class="mt-2">
             <input v-model="email" type="email" id="email" required
-                   class="block w-full rounded-md bg-white px-3 py-1.5 text-base
-                     text-gray-900 outline-1 -outline-offset-1 outline-gray-300
-                     placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2
-                     focus:outline-indigo-600 sm:text-sm/6 dark:bg-white/5 dark:text-white
-                     dark:outline-white/10 dark:placeholder:text-gray-500 dark:focus:outline-indigo-500" />
+                   class="block w-full rounded-md px-3 py-2 text-base
+           bg-[var(--input)] text-[var(--fg)]
+           outline outline-1 -outline-offset-1 outline-[var(--border)]
+           placeholder:text-[var(--muted)]
+           focus:outline-2 focus:-outline-offset-2 focus:outline-[var(--ring)] sm:text-sm/6" />
           </div>
-        </div>
 
-        <div>
-          <label for="password" class="block text-sm/6 font-medium text-gray-900 dark:text-gray-100">Contraseña</label>
+          <label for="password" class="block text-sm/6 font-medium text-[var(--fg)]">Contraseña</label>
           <div class="mt-2">
             <input v-model="password" type="password" id="password" required
-                   class="block w-full rounded-md bg-white px-3 py-1.5 text-base
-                     text-gray-900 outline-1 -outline-offset-1 outline-gray-300
-                     placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2
-                     focus:outline-indigo-600 sm:text-sm/6 dark:bg-white/5 dark:text-white
-                     dark:outline-white/10 dark:placeholder:text-gray-500 dark:focus:outline-indigo-500" />
+                   class="block w-full rounded-md px-3 py-2 text-base
+           bg-[var(--input)] text-[var(--fg)]
+           outline outline-1 -outline-offset-1 outline-[var(--border)]
+           placeholder:text-[var(--muted)]
+           focus:outline-2 focus:-outline-offset-2 focus:outline-[var(--ring)] sm:text-sm/6" />
           </div>
         </div>
 
@@ -59,7 +57,9 @@ async function onSubmit(e: Event) {
                    focus-visible:outline-indigo-600 disabled:opacity-60">
             {{ auth.loading ? 'Ingresando…' : 'Iniciar Sesión' }}
           </button>
-          <p v-if="errorMsg" class="mt-3 text-sm text-red-500">{{ errorMsg }}</p>
+          <p v-if="auth.error" class="mt-2 text-sm text-red-500">
+            {{ auth.error }}
+          </p>
         </div>
       </form>
       <!-- ... pie ... -->

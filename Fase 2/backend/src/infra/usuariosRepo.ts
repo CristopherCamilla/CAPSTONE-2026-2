@@ -96,4 +96,11 @@ export const usuariosRepo = {
         );
         return rows[0] ?? null;
     },
+
+    async findSafeById(id: number) {
+        const row = await this.getById(id)
+        if (!row) return null
+        const { password, ...safe } = row as any
+        return safe
+    },
 };

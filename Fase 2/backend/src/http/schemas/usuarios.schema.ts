@@ -7,10 +7,8 @@ export const UsuarioCreateSchema = z.object({
     email: z.string().email(),
     password: z.string().min(6),
     rol: z.enum(["admin", "editor", "usuario"]).default("usuario"),
-    estado: z.enum(["activo", "inactivo"]).default("activo")
+    estado: z.enum(["activo", "inactiv"]).default("activo")
 });
 
 export const UsuarioUpdateSchema = UsuarioCreateSchema.partial()
     .extend({ password: z.string().min(6).optional() });
-
-export type UsuarioCreate = z.infer<typeof UsuarioCreateSchema>;
