@@ -7,6 +7,8 @@ import { router } from './router'
 
 import PrimeVue from 'primevue/config'
 import Aura from '@primeuix/themes/aura'
+//import 'primevue/resources/themes/aura-dark-noir/theme.css' // o theme instalado
+//import 'primevue/resources/primevue.min.css'
 import 'primeicons/primeicons.css'
 
 const saved = localStorage.getItem('theme')

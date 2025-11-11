@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import {useRoute, useRouter} from 'vue-router'
 import { useAuth } from '@/stores/auth'
 
 const email = ref('')
 const password = ref('')
 const auth = useAuth()
 const router = useRouter()
+const route = useRoute()
 
 const errorMsg = ref<string|null>(null)
 
@@ -15,7 +16,11 @@ async function onSubmit(e: Event) {
   errorMsg.value = null
   try {
     const ok = await auth.login(email.value, password.value)
-    if (ok) router.push('/report')
+    if (ok) {
+      // ⬇️ usa el redirect si venía de una ruta protegida
+      const to = (route.query.redirect as string) || '/report'
+      router.replace(to)
+    }
   } catch (e:any) {
     errorMsg.value = e?.response?.data?.message || 'No se pudo iniciar sesión'
   }

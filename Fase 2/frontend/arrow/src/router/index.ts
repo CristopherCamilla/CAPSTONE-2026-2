@@ -15,32 +15,34 @@ const routes = [
             path: '/login',
             name: 'Login',
             component: () => import('../views/LoginView.vue'),
-            meta: { requiresAuth: false }
+            meta: { requiresAuth: false, guestOnly: true },
         },
         {
             path: '/report',
+            name: 'Report',
             component: () => import('../views/ReportView.vue'),
-            meta: { requiresAuth: false },
+            meta: { requiresAuth: true },
             children: [
                 { path: '', redirect: { name: 'ReportResumen' } },
+                {
+                    path: 'productos',
+                    name: 'ReportProductos',
+                    component: () => import('@/views/report/ReportProductosSub.vue'), // o tu nuevo archivo
+                    meta: { keepAlive: true, requiresAuth: true }
+                },
                 {
                     path: 'resumen',
                     name: 'ReportResumen',
                     component: () => import('@/views/report/ResumenSub.vue'),
-                    meta: { keepAlive: true, requiresAuth: false }
+                    meta: { keepAlive: true, requiresAuth: true }
                 },
                 {
                     path: 'detalle',
                     name: 'ReportDetalle',
                     component: () => import('@/views/report/DetalleSub.vue'),
-                    meta: { keepAlive: true, requiresAuth: false }
+                    meta: { keepAlive: true, requiresAuth: true }
                 },
-                {
-                    path: 'productos',
-                    name: 'ReportProductos',
-                    component: () => import('@/views/report/ReportProductosSub.vue'), // o tu nuevo archivo
-                    meta: { keepAlive: true, requiresAuth: false }
-                }
+
             ]
         },
         {
@@ -69,21 +71,33 @@ router.onError((err) => {
 })
 
 //Guard Global
+let bootstrapped = false
 router.beforeEach(async (to) => {
-    const auth = useAuth ()
-    const isAuth = auth.isAuthenticated
-    //Para que todas las rutas sean LOWERCASE
+    const auth = useAuth()
+
+    // normaliza a lowercase
     if (to.fullPath !== to.fullPath.toLowerCase()) {
         return { path: to.fullPath.toLowerCase(), query: to.query, hash: to.hash }
     }
 
+    // hidrata sesión 1 sola vez (para F5, pestaña nueva, etc.)
+    if (!bootstrapped) {
+        bootstrapped = true
+        await auth.me()
+    }
+
+    const isAuth = auth.isAuthenticated
+
+    // protege privadas
     if (to.meta.requiresAuth && !isAuth) {
         auth.returnUrl = to.fullPath
         return { name: 'Login', query: { redirect: to.fullPath } }
     }
-    // Si la ruta es el login y ya está logueado, redirige al dashboard
-    if (isAuth && to.name === 'Report') {
+
+    // bloquea login si ya hay sesión
+    if (to.meta.guestOnly && isAuth) {
         return { name: 'Report' }
     }
-    return true;
+
+    return true
 })

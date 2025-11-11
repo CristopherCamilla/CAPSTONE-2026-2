@@ -1,4 +1,3 @@
-<!-- src/components/Navbar.vue -->
 <template>
   <header
       class="sticky top-0 z-50 backdrop-blur border-b border-black/5 dark:border-white/10
@@ -6,20 +5,17 @@
     <nav class="mx-auto max-w-6xl px-4 h-14 flex items-center justify-between">
       <!-- izquierda -->
       <div class="flex items-center gap-3 min-w-0">
-        <RouterLink to="/" class="font-bold truncate text-[var(--fg)]">
-          Arrow
+        <RouterLink to="/" class="flex items-center gap-4">
+          <img :src="AristoLogo" alt="Aristo" class="h-7 w-auto" />
+          <img :src="IntercoLogo" alt="Interco" class="h-7 w-auto" />
         </RouterLink>
 
-        <div class="hidden sm:flex items-center gap-4">
-          <RouterLink to="/about" class="opacity-80 hover:opacity-100 text-[var(--fg)]">
-            Acerca
-          </RouterLink>
-
-          <template v-if="isAuth">
-            <RouterLink to="/report/resumen"  class="opacity-80 hover:opacity-100 text-[var(--fg)]">Resumen</RouterLink>
-            <RouterLink to="/report/detalle"  class="opacity-80 hover:opacity-100 text-[var(--fg)]">Detalle</RouterLink>
-            <RouterLink to="/report/productos" class="opacity-80 hover:opacity-100 text-[var(--fg)]">Productos</RouterLink>
-          </template>
+        <!-- enlaces solo si autenticado -->
+        <div v-if="auth.isAuthenticated" class="flex items-center gap-4 text-[var(--link)]">
+          <RouterLink to="/report/productos" class="hover:underline">Productos</RouterLink>
+          <RouterLink to="/report/resumen" class="hover:underline">Resumen</RouterLink>
+          <RouterLink to="/report/detalle" class="hover:underline">Detalle</RouterLink>
+          <RouterLink to="/report/resumen" class="hover:underline">Acerca</RouterLink>
         </div>
       </div>
 
@@ -113,6 +109,8 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import ThemeToggle from '@/components/ThemeToggle.vue'
 import { useAuth } from '@/stores/auth'
+import AristoLogo from '@/assets/brand/aristo_logo.svg'
+import IntercoLogo from '@/assets/brand/interco_logo.svg'
 
 const auth = useAuth()
 const isAuth = computed(() => !!auth.user)
@@ -147,6 +145,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 </script>
 
 <style scoped>
+:root{
+  --nav:#0f172a20; /* ajusta según tu tema */
+}
 .fade-enter-active, .fade-leave-active { transition: opacity .15s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>

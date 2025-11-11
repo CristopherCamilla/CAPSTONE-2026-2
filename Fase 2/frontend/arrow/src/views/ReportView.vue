@@ -2,13 +2,13 @@
   <section class="container">
     <header class="toolbar">
       <div>
-        <h1>Reporte</h1>
+        <h1>Buscador</h1>
       </div>
       <div>
         <nav class="tabs">
+          <RouterLink :to="{ name: 'ReportProductos' }" class="tab" active-class="active">Productos</RouterLink>
           <RouterLink :to="{ name: 'ReportResumen' }" class="tab" active-class="active">Resumen</RouterLink>
           <RouterLink :to="{ name: 'ReportDetalle' }" class="tab" active-class="active">Detalle</RouterLink>
-          <RouterLink :to="{ name: 'ReportProductos' }" class="tab" active-class="active">Productos</RouterLink>
         </nav>
       </div>
     </header>
