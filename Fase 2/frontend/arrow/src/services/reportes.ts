@@ -33,5 +33,6 @@ export async function listarReportes(
     if (filters.subcategoria) params.subcategoria = filters.subcategoria
 
     const { data } = await http.get('/api/reportes', { params })
-    return data.rows as ReportRow[]
+    return data as ReportRow[]
+
 }

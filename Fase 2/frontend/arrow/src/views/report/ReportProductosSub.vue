@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, computed } from 'vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Image from 'primevue/image'
@@ -14,9 +14,9 @@ const error = ref<string|null>(null)
 
 const filters = ref({
   codigo: '',
-  genero: null as string | null,
-  categoria: null as string | null,
-  subcategoria: null as string | null,
+  genero: '',
+  categoria: '',
+  subcategoria: '',
 })
 
 function fmtNum(v: unknown, d = 0) {
@@ -30,7 +30,28 @@ async function cargar() {
   try {
     loading.value = true
     error.value = null
-    rows.value = await listarReportes(200, 0, filters.value)
+    console.log('Filtros: ', filters.value)
+
+    // Verificar si los filtros están vacíos
+    const validFilters = {
+      codigo: filters.value.codigo.trim() || '',  // Si está vacío, lo dejamos vacío
+      genero: filters.value.genero?.trim() || '',  // Eliminar espacios de genero
+      categoria: filters.value.categoria?.trim() || '',  // Eliminar espacios de categoria
+      subcategoria: filters.value.subcategoria?.trim() || '',  // Eliminar espacios de subcategoria
+    }
+    console.log("Filtros antes de enviar al backend: ", validFilters);
+    // Si todos los filtros son vacíos, no enviar ninguno
+    const appliedFilters = Object.values(validFilters).every(f => f === '')
+
+    if (appliedFilters) {
+      // Si no hay filtros aplicados, obtener todos los productos
+      rows.value = await listarReportes(200, 0)  // Se pueden pasar los valores por defecto
+      console.log('Datos cargados sin filtro:', rows.value)
+    } else {
+      // Si hay filtros, enviar los filtros aplicados
+      rows.value = await listarReportes(200, 0, validFilters)
+      console.log('Datos cargados con filtro:', rows.value)
+    }
   } catch (e:any) {
     error.value = e?.message ?? 'Error cargando reportes'
     rows.value = []
@@ -39,12 +60,19 @@ async function cargar() {
   }
 }
 
-function limpiar() {
-  filters.value = { codigo: '', genero: null, categoria: null, subcategoria: null }
-  cargar()
-}
 
-onMounted(cargar)
+function limpiar() {
+  // Reiniciar los filtros a sus valores predeterminados
+  filters.value = {
+    codigo: '',
+    genero: '',
+    categoria: '',
+    subcategoria: ''
+  };
+  console.log('limpieza ', filters.value)
+  // Volver a cargar los productos sin aplicar ningún filtro
+  cargar();
+}
 
 /* Opciones de selects deducidas de los datos */
 type Opt = { label: string; value: string }
