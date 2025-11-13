@@ -22,10 +22,14 @@ export interface ReportFilters {
 
 export const reportesRepo = {
     async list(limit = 100, offset = 0, filters: ReportFilters = {}): Promise<ReportRow[]> {
-        let whereClauses = ['(COALESCE(si.stock,0) + COALESCE(sa.stock,0)) > 0'];
-        let params: any[] = [limit, offset];
+        const whereClauses: string[] = [
+            '(COALESCE(si.stock,0) + COALESCE(sa.stock,0)) > 0'
+        ];
 
-        // Solo agregamos las condiciones si los filtros no están vacíos
+        const params: any[] = [];   // empezamos vacío
+
+        console.log('Filtros recibidos en el backend: ', filters);
+
         if (filters.codigo) {
             whereClauses.push('a.codigo LIKE ?');
             params.push(`%${filters.codigo}%`);
@@ -43,7 +47,6 @@ export const reportesRepo = {
             params.push(filters.subcategoria);
         }
 
-        // Comprobamos que la consulta se construya correctamente
         const query = `
             SELECT
                 a.imagen,
@@ -56,21 +59,24 @@ export const reportesRepo = {
                 COALESCE(p.venta_prom_6m_estimada, 0.00) AS venta_prom_6m_estimada,
                 COALESCE(p.venta_prom_x_articulo_estimada, 0.00) AS venta_prom_x_articulo_estimada
             FROM articulos a
-                     LEFT JOIN color c ON a.color = c.color
-                     LEFT JOIN stock_interco si ON a.codigo_color = si.codigo_color
-                     LEFT JOIN stock_aristo sa ON a.codigo_color = sa.codigo_color
-                     LEFT JOIN proyeccion_ventas_total p ON a.id_linea = p.id_linea
-                     LEFT JOIN genero g ON a.genero = g.cod_genero
-                     LEFT JOIN categoria ca ON a.categoria = ca.cod_categoria
-                     LEFT JOIN sub_categoria sca ON a.sub_categoria = sca.cod_subcategoria
+            LEFT JOIN color           c   ON a.color       = c.color
+            LEFT JOIN stock_interco   si  ON a.codigo_color = si.codigo_color
+            LEFT JOIN stock_aristo    sa  ON a.codigo_color = sa.codigo_color
+            LEFT JOIN proyeccion_ventas_total p ON a.id_linea = p.id_linea
+            LEFT JOIN genero          g   ON a.genero     = g.cod_genero
+            LEFT JOIN categoria       ca  ON a.categoria  = ca.cod_categoria
+            LEFT JOIN sub_categoria   sca ON a.sub_categoria = sca.cod_subcategoria
             WHERE ${whereClauses.join(' AND ')}
             ORDER BY a.codigo
-                LIMIT ? OFFSET ?
+            LIMIT ? OFFSET ?
         `;
-        console.log('Consulta SQL generada:', query);
+
+        // los dos últimos ? son limit y offset
+        params.push(limit, offset);
+
+        console.log('SQL FINAL:', query, 'PARAMS:', params);
+
         const [rows] = await pool.query<ReportRow[]>(query, params);
         return rows;
     }
 };
-
-

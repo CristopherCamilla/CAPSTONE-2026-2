@@ -1,23 +1,18 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed} from 'vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Image from 'primevue/image'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import Button from 'primevue/button'
-import { listarReportes, type ReportRow } from '@/services/reportes'
+import { listarReportes, type ReportRow, type ReportFilters } from '@/services/reportes'
 
 const rows = ref<ReportRow[]>([])
 const loading = ref(false)
 const error = ref<string|null>(null)
 
-const filters = ref({
-  codigo: '',
-  genero: '',
-  categoria: '',
-  subcategoria: '',
-})
+const filters = ref<ReportFilters>({})
 
 function fmtNum(v: unknown, d = 0) {
   const n = Number(v)
@@ -39,6 +34,13 @@ async function cargar() {
       categoria: filters.value.categoria?.trim() || '',  // Eliminar espacios de categoria
       subcategoria: filters.value.subcategoria?.trim() || '',  // Eliminar espacios de subcategoria
     }
+
+    console.log('Valor de genero en el frontend: ', filters.value.genero);
+
+    // Filtrar solo los filtros que tengan un valor
+    // const appliedFilters = Object.fromEntries(
+    //     Object.entries(validFilters).filter(([key, value]) => value.trim() !== "")
+    // );
     console.log("Filtros antes de enviar al backend: ", validFilters);
     // Si todos los filtros son vacíos, no enviar ninguno
     const appliedFilters = Object.values(validFilters).every(f => f === '')
@@ -79,6 +81,7 @@ type Opt = { label: string; value: string }
 
 function toOpts(values: (string | null | undefined)[]): Opt[] {
   const uniq = Array.from(new Set(values.filter((x): x is string => !!x))).sort()
+
   return uniq.map(v => ({ label: v, value: v }))
 }
 

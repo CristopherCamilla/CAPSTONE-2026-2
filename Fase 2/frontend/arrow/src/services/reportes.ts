@@ -25,14 +25,19 @@ export async function listarReportes(
     offset = 0,
     filters: ReportFilters = {}
 ): Promise<ReportRow[]> {
-    const params: any = { limit, offset }
+    const params: any = { limit, offset };
 
-    if (filters.codigo) params.codigo = filters.codigo
-    if (filters.genero) params.genero = filters.genero
-    if (filters.categoria) params.categoria = filters.categoria
-    if (filters.subcategoria) params.subcategoria = filters.subcategoria
+    if (filters.codigo) params.codigo = filters.codigo;  // Permite cadenas vacías
+    if (filters.genero) params.genero = filters.genero;
+    if (filters.categoria) params.categoria = filters.categoria;
+    if (filters.subcategoria) params.subcategoria = filters.subcategoria;
+
+    console.log('Filtros para mandar parametros : ', params);
+
+    console.log('filtros para mandar filtros :', filters.genero);
 
     const { data } = await http.get('/api/reportes', { params })
+    console.log('en data ', params)
     return data as ReportRow[]
 
 }

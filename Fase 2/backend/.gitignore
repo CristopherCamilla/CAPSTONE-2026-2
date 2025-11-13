@@ -46,3 +46,4 @@ pnpm-debug.log*
 *.temp
 *.swp
 *.swo
+/src/generated/prisma
