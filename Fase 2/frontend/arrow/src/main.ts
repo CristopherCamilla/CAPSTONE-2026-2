@@ -7,8 +7,6 @@ import { router } from './router'
 
 import PrimeVue from 'primevue/config'
 import Aura from '@primeuix/themes/aura'
-//import 'primevue/resources/themes/aura-dark-noir/theme.css' // o theme instalado
-//import 'primevue/resources/primevue.min.css'
 import 'primeicons/primeicons.css'
 
 const saved = localStorage.getItem('theme')
@@ -22,7 +20,7 @@ app.use(pinia)
 app.use(router)
 app.use(PrimeVue, { theme: { preset: Aura } })
 
-// ⬇️ intenta levantar sesión de la cookie
+//intenta levantar sesión de la cookie
 import { useAuth } from '@/stores/auth'
 useAuth(pinia).me().finally(() => {
     app.mount('#app')

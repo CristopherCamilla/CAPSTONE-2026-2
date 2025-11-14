@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed} from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Image from 'primevue/image'
@@ -11,8 +11,40 @@ import { listarReportes, type ReportRow, type ReportFilters } from '@/services/r
 const rows = ref<ReportRow[]>([])
 const loading = ref(false)
 const error = ref<string|null>(null)
+const liveSearch = ref(true)
 
-const filters = ref<ReportFilters>({})
+const filters = ref<ReportFilters>({
+  codigo: '',
+  genero: '',
+  categoria: '',
+  subcategoria: '',
+})
+
+function limpiar() {
+  filters.value = {
+    codigo: '',
+    genero: '',
+    categoria: '',
+    subcategoria: ''
+  }
+  console.log('limpieza ', filters.value)
+  cargar()
+}
+
+// ====== BÚSQUEDA EN VIVO SOLO PARA CÓDIGO ======
+let debounceId: ReturnType<typeof setTimeout> | null = null
+
+watch(
+    () => filters.value.codigo,
+    () => {
+      if (!liveSearch.value) return
+
+      if (debounceId) clearTimeout(debounceId)
+      debounceId = setTimeout(() => {
+        cargar()
+      }, 400)
+    }
+)
 
 function fmtNum(v: unknown, d = 0) {
   const n = Number(v)
@@ -27,30 +59,22 @@ async function cargar() {
     error.value = null
     console.log('Filtros: ', filters.value)
 
-    // Verificar si los filtros están vacíos
     const validFilters = {
-      codigo: filters.value.codigo.trim() || '',  // Si está vacío, lo dejamos vacío
-      genero: filters.value.genero?.trim() || '',  // Eliminar espacios de genero
-      categoria: filters.value.categoria?.trim() || '',  // Eliminar espacios de categoria
-      subcategoria: filters.value.subcategoria?.trim() || '',  // Eliminar espacios de subcategoria
+      codigo: filters.value.codigo?.trim() || '',
+      genero: filters.value.genero?.trim() || '',
+      categoria: filters.value.categoria?.trim() || '',
+      subcategoria: filters.value.subcategoria?.trim() || '',
     }
 
-    console.log('Valor de genero en el frontend: ', filters.value.genero);
+    console.log('Valor de genero en el frontend: ', filters.value.genero)
+    console.log('Filtros antes de enviar al backend: ', validFilters)
 
-    // Filtrar solo los filtros que tengan un valor
-    // const appliedFilters = Object.fromEntries(
-    //     Object.entries(validFilters).filter(([key, value]) => value.trim() !== "")
-    // );
-    console.log("Filtros antes de enviar al backend: ", validFilters);
-    // Si todos los filtros son vacíos, no enviar ninguno
     const appliedFilters = Object.values(validFilters).every(f => f === '')
 
     if (appliedFilters) {
-      // Si no hay filtros aplicados, obtener todos los productos
-      rows.value = await listarReportes(200, 0)  // Se pueden pasar los valores por defecto
+      rows.value = await listarReportes(200, 0)
       console.log('Datos cargados sin filtro:', rows.value)
     } else {
-      // Si hay filtros, enviar los filtros aplicados
       rows.value = await listarReportes(200, 0, validFilters)
       console.log('Datos cargados con filtro:', rows.value)
     }
@@ -62,26 +86,11 @@ async function cargar() {
   }
 }
 
-
-function limpiar() {
-  // Reiniciar los filtros a sus valores predeterminados
-  filters.value = {
-    codigo: '',
-    genero: '',
-    categoria: '',
-    subcategoria: ''
-  };
-  console.log('limpieza ', filters.value)
-  // Volver a cargar los productos sin aplicar ningún filtro
-  cargar();
-}
-
 /* Opciones de selects deducidas de los datos */
 type Opt = { label: string; value: string }
 
 function toOpts(values: (string | null | undefined)[]): Opt[] {
   const uniq = Array.from(new Set(values.filter((x): x is string => !!x))).sort()
-
   return uniq.map(v => ({ label: v, value: v }))
 }
 
@@ -89,10 +98,12 @@ const generos       = computed<Opt[]>(() => toOpts((rows.value ?? []).map(r => r
 const categorias    = computed<Opt[]>(() => toOpts((rows.value ?? []).map(r => r.categoria)))
 const subcategorias = computed<Opt[]>(() => toOpts((rows.value ?? []).map(r => r.sub_categoria)))
 
+onMounted(() => {
+  cargar()
+})
 </script>
 
 <template>
-  <!-- Barra de filtros -->
   <div class="flex flex-wrap gap-2 items-center mb-3">
     <InputText
         placeholder="Código"
@@ -132,6 +143,17 @@ const subcategorias = computed<Opt[]>(() => toOpts((rows.value ?? []).map(r => r
 
     <Button label="Buscar" icon="pi pi-search" @click="cargar" />
     <Button label="Borrar" severity="secondary" @click="limpiar" />
+
+    <div class="flex items-center gap-2 ml-4 text-sm">
+      <Button
+          :label="liveSearch ? 'Auto: ON' : 'Auto: OFF'"
+          :icon="liveSearch ? 'pi pi-bolt' : 'pi pi-ban'"
+          :severity="liveSearch ? 'success' : 'danger'"
+          size="small"
+          @click="liveSearch = !liveSearch"
+      />
+      <span>Buscar mientras escribo</span>
+    </div>
   </div>
 
   <div v-if="loading">Cargando…</div>

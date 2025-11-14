@@ -1,18 +1,8 @@
 <template>
   <section class="container">
     <header class="toolbar">
-      <div>
-        <h1>Buscador</h1>
-      </div>
-      <div>
-        <nav class="tabs">
-          <RouterLink :to="{ name: 'ReportProductos' }" class="tab" active-class="active">Productos</RouterLink>
-          <RouterLink :to="{ name: 'ReportResumen' }" class="tab" active-class="active">Resumen</RouterLink>
-          <RouterLink :to="{ name: 'ReportDetalle' }" class="tab" active-class="active">Detalle</RouterLink>
-        </nav>
-      </div>
-    </header>
 
+    </header>
     <RouterView v-slot="{ Component }">
       <KeepAlive>
         <component :is="Component" />
