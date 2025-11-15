@@ -1,3 +1,4 @@
+// router/index.ts
 import { createRouter, createWebHistory } from 'vue-router'
 import {useAuth } from "../stores/auth.ts";
 
@@ -23,7 +24,6 @@ const routes = [
             component: () => import('../views/ReportView.vue'),
             meta: { requiresAuth: true },
             children: [
-                { path: '', redirect: { name: 'ReportResumen' } },
                 {
                     path: 'productos',
                     name: 'ReportProductos',

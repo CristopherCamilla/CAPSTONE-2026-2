@@ -10,6 +10,10 @@ type User = {
     rol?: string
 } | null
 
+function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export const useAuth = defineStore('auth', {
     state: () => ({
         user: null as User,
@@ -22,20 +26,28 @@ export const useAuth = defineStore('auth', {
     },
     actions: {
         async login(email: string, password: string) {
-            this.loading = true
-            this.error = ''
+            const MIN_LOADING_MS = 2000;     // 👈1.2s
+            const start = performance.now(); // para medir cuánto duró realmente
+
+            this.loading = true;
+            this.error = '';
             try {
-                const { data } = await http.post('/api/auth/login', { email, password })
-                this.user = data.user
-                return true
+                const { data } = await http.post('/api/auth/login', { email, password });
+                this.user = data.user;
+                return true;
             } catch (e: any) {
-                this.user = null
+                this.user = null;
                 this.error = e?.response?.status === 401
                     ? 'Credenciales inválidas'
-                    : 'No se pudo iniciar sesión'
-                return false
+                    : 'No se pudo iniciar sesión';
+                return false;
             } finally {
-                this.loading = false
+                const elapsed = performance.now() - start;
+                const remaining = MIN_LOADING_MS - elapsed;
+                if (remaining > 0) {
+                    await sleep(remaining);      // 👈 mantiene el spinner el tiempo faltante
+                }
+                this.loading = false;
             }
         },
         async me() {

@@ -1,3 +1,4 @@
+// usuariosRepo.ts
 import { pool } from "./db.js";
 import type { RowDataPacket, ResultSetHeader } from "mysql2";
 

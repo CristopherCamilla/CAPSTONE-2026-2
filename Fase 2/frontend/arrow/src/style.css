@@ -17,9 +17,9 @@
 
 :root{
     --bg:#ffffff;
-    --fg:#213547;        /* texto principal */
+    --fg: #ffffff;        /* texto principal */
     --muted:#6b7280;     /* texto secundario */
-    --brand:#10B981;
+    --brand: #ffffff;
     --brand-2:#14B8A6;
     --card:#f8fafc;      /* fondos suaves */
     --input:#ffffff;     /* fondo inputs */

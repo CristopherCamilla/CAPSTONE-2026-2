@@ -1,3 +1,4 @@
+<!--NavBar.vue-->
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
@@ -57,19 +58,19 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 
 <template>
   <header
-      class="sticky top-0 z-50 backdrop-blur border-b border-black/5 dark:border-white/10
-           bg-white/70 dark:bg-slate-900/40"
+      class="sticky top-0 z-50 border-b bg-sky-800"
   >
-    <nav class="mx-auto max-w-6xl px-4 h-14 flex items-center justify-between gap-3">
-      <!-- izquierda -->
-      <div class="flex items-center gap-4 min-w-0">
-        <!-- logos -->
-        <RouterLink to="/" class="flex items-center gap-2 shrink-0">
+    <nav class="mx-auto max-w-6xl px-4 h-14 flex items-center gap-3">
+      <!-- IZQUIERDA: logos -->
+      <div class="flex items-center gap-2 shrink-0">
+        <RouterLink to="/" class="flex items-center gap-2">
           <img :src="AristoLogo" alt="Aristo" class="h-7 w-auto" />
           <img :src="IntercoLogo" alt="Interco" class="h-7 w-auto" />
         </RouterLink>
+      </div>
 
-        <!-- enlaces desktop como botones -->
+      <!-- CENTRO: navItems centrados -->
+      <div class="flex-1 flex justify-center">
         <div
             v-if="isAuth"
             class="hidden md:flex items-center gap-2 text-sm overflow-x-auto scrollbar-none"
@@ -81,17 +82,16 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
               class="px-3 py-1.5 rounded-md font-medium transition-colors whitespace-nowrap
                    border border-transparent"
               :class="isActive(item.to)
-              ? 'bg-indigo-600 text-white shadow-sm border-indigo-600'
-              : 'text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-slate-800 hover:border-indigo-200'"
+              ? 'bg-indigo-500 text-white shadow-sm border-indigo-600'
+              : 'text-slate-700 dark:text-slate-200 hover:bg-indigo-400 hover:border-indigo-400'"
           >
             {{ item.label }}
           </RouterLink>
         </div>
       </div>
 
-      <!-- derecha (desktop: md+) -->
-      <div class="hidden md:flex items-center gap-3">
-        <!-- si NO hay sesión -->
+      <!-- DERECHA (desktop: md+) -->
+      <div class="hidden md:flex items-center gap-3 shrink-0">
         <RouterLink
             v-if="!isAuth"
             :to="{ name: 'Login' }"
@@ -100,7 +100,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
           Iniciar sesión
         </RouterLink>
 
-        <!-- si hay sesión -->
         <div v-else class="flex items-center gap-3">
           <div class="hidden lg:flex items-center gap-2">
             <div
@@ -115,7 +114,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
           </div>
           <button
               @click="onLogout"
-              class="rounded-lg px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white text-sm"
+              class="rounded-lg px-3 py-1.5 bg-rose-800 hover:bg-rose-400 text-white text-sm"
           >
             Cerrar sesión
           </button>
@@ -124,9 +123,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
         <ThemeToggle />
       </div>
 
-      <!-- botón hamburguesa (móvil/tablet) -->
+      <!-- HAMBURGUESA (solo móvil/tablet) -->
       <button
-          class="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-full
+          class="md:hidden ml-auto inline-flex items-center justify-center w-9 h-9 rounded-full
                border border-black/10 dark:border-white/10"
           aria-label="Abrir menú"
           @click="open = !open"
@@ -136,13 +135,12 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
       </button>
     </nav>
 
-    <!-- menú móvil (md- hacia abajo) -->
+    <!-- menú móvil igual que ya lo tenías -->
     <transition name="fade">
       <div v-if="open" class="md:hidden border-t border-black/5 dark:border-white/10">
         <div class="mx-auto max-w-6xl px-4 py-3 flex flex-col gap-2">
           <RouterLink @click="close" to="/" class="py-2">Inicio</RouterLink>
 
-          <!-- reutilizamos navItems para móvil -->
           <template v-if="isAuth">
             <RouterLink
                 v-for="item in navItems"
@@ -163,7 +161,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
             <ThemeToggle />
           </div>
 
-          <!-- action login / logout -->
           <div class="pt-2">
             <RouterLink
                 v-if="!isAuth"
@@ -189,6 +186,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
     </transition>
   </header>
 </template>
+
 
 <style scoped>
 .scrollbar-none::-webkit-scrollbar {

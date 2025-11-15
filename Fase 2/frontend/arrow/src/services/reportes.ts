@@ -1,3 +1,4 @@
+// reportes.ts
 import { http } from '@/lib/http';
 
 export type ReportRow = {
@@ -20,24 +21,38 @@ export type ReportFilters = {
     subcategoria?: string | null
 }
 
+export type ReportListResult = {
+    items: ReportRow[];
+    total: number;
+};
+
 export async function listarReportes(
     limit = 100,
     offset = 0,
     filters: ReportFilters = {}
-): Promise<ReportRow[]> {
+): Promise<ReportListResult> {
     const params: any = { limit, offset };
 
-    if (filters.codigo) params.codigo = filters.codigo;  // Permite cadenas vacías
+    if (filters.codigo) params.codigo = filters.codigo;
     if (filters.genero) params.genero = filters.genero;
     if (filters.categoria) params.categoria = filters.categoria;
     if (filters.subcategoria) params.subcategoria = filters.subcategoria;
 
     console.log('Filtros para mandar parametros : ', params);
 
-    console.log('filtros para mandar filtros :', filters.genero);
+    const { data } = await http.get('/api/reportes', { params });
+    return data as ReportListResult;
 
-    const { data } = await http.get('/api/reportes', { params })
-    console.log('en data ', params)
-    return data as ReportRow[]
+}
 
+// === NUEVO: opciones de filtros desde el backend ===
+export type ReportFilterOptions = {
+    generos: string[];
+    categorias: string[];
+    subcategorias: string[];
+};
+
+export async function obtenerOpcionesFiltros(): Promise<ReportFilterOptions> {
+    const { data } = await http.get('/api/reportes/filtros');
+    return data as ReportFilterOptions;
 }

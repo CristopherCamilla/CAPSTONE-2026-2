@@ -1,6 +1,6 @@
 <!-- src/components/FiltersBar.vue -->
 <script setup lang="ts">
-import { reactive, toRefs } from 'vue'
+import { reactive } from 'vue'
 
 type Filters = {
   codigo: string
