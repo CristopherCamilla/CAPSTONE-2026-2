@@ -26,7 +26,7 @@ export const useAuth = defineStore('auth', {
     },
     actions: {
         async login(email: string, password: string) {
-            const MIN_LOADING_MS = 2000;     // 👈1.2s
+            const MIN_LOADING_MS = 1500;     // 👈1.2s
             const start = performance.now(); // para medir cuánto duró realmente
 
             this.loading = true;

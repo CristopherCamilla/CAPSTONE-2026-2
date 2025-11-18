@@ -60,7 +60,7 @@ function fmtNum(v: unknown, d = 0) {
 }
 
 async function cargar() {
-  const MIN_LOADING_MS = 5000
+  const MIN_LOADING_MS = 1500
   const start = performance.now()
   try {
     loading.value = true
