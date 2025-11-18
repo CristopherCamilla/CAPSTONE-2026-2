@@ -1,31 +1,34 @@
 <!-- src/views/LoginView.vue -->
 <script setup lang="ts">
 import { ref } from 'vue'
-import {useRoute, useRouter} from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from '@/stores/auth'
 import ProgressSpinner from 'primevue/progressspinner'
 
 const email = ref('')
 const password = ref('')
+
+// 👁️ estado para mostrar/ocultar contraseña
+const showPassword = ref(false)
+
 const auth = useAuth()
 const router = useRouter()
 const route = useRoute()
 
-const errorMsg = ref<string|null>(null)
+const errorMsg = ref<string | null>(null)
 
 async function onSubmit(e: Event) {
   e.preventDefault()
 
-  // limpiamos error anterior
   auth.error = ''
 
   try {
     const ok = await auth.login(email.value, password.value)
     if (ok) {
       const to = (route.query.redirect as string) || '/report/resumen'
-      router.replace(to)
+      await router.replace(to)
     }
-  } catch (e:any) {
+  } catch (e: any) {
     errorMsg.value = e?.response?.data?.message || 'No se pudo iniciar sesión'
   }
 }
@@ -46,7 +49,7 @@ async function onSubmit(e: Event) {
                 class="block w-full rounded-md px-3 py-2 text-base
                      text-slate-900
                      border border-slate-300 dark:border-slate-700
-                     outline outline-1 -outline-offset-1 outline-[var(--border)]
+                     outline-1 -outline-offset-1 outline-[var(--border)]
                      placeholder:text-slate-400 dark:placeholder:text-slate-500
                      focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm/6"
             />
@@ -55,19 +58,31 @@ async function onSubmit(e: Event) {
           <label for="password" class="mt-4 block text-sm/6 font-medium text-slate-900">
             Contraseña
           </label>
-          <div class="mt-2">
+
+          <!-- contenedor del input + botón -->
+          <div class="mt-2 relative">
             <input
                 v-model="password"
-                type="password"
+                :type="showPassword ? 'text' : 'password'"
                 id="password"
                 required
-                class="block w-full rounded-md px-3 py-2 text-base
+                class="block w-full rounded-md px-3 py-2 pr-10 text-base
                      text-slate-900
                      border border-slate-300 dark:border-slate-700
-                     outline outline-1 -outline-offset-1 outline-[var(--border)]
+                     outline-1 -outline-offset-1 outline-[var(--border)]
                      placeholder:text-slate-400 dark:placeholder:text-slate-500
                      focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm/6"
             />
+
+            <!-- botón con icono PrimeIcons -->
+            <button
+                type="button"
+                class="absolute inset-y-0 right-0 flex items-center pr-3
+           text-slate-400 hover:text-slate-600"
+                @click="showPassword = !showPassword"
+            >
+              <i :class="['pi', showPassword ? 'pi-eye-slash' : 'pi-eye']"></i>
+            </button>
           </div>
         </div>
 
@@ -98,7 +113,7 @@ async function onSubmit(e: Event) {
       </form>
     </div>
 
-    <!-- overlay global mientras se hace login (opcional, pero queda pro) -->
+    <!-- overlay global mientras se hace login -->
     <teleport to="body">
       <div
           v-if="auth.loading"
