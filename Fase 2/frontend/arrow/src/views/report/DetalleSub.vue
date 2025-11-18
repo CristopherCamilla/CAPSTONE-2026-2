@@ -86,12 +86,12 @@ const columns = [
 
 <template>
   <div>
-    <button @click="obtenerDatos">Actualizar datos</button>
+    <button class="text-black" @click="obtenerDatos">Actualizar datos</button>
 
-    <div v-if="loading">Cargando datos…</div>
+    <div class="text-black" v-if="loading">Cargando datos…</div>
     <div v-else-if="error" class="error">{{ error }}</div>
 
-    <DataTable :columns="columns" :rows="items" :rowKey="(r)=>r.id" />
+    <DataTable class="text-black " :columns="columns" :rows="items" :rowKey="(r)=>r.id" />
   </div>
 </template>
 

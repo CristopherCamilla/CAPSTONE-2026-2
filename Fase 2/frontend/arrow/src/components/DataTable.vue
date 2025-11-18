@@ -57,7 +57,7 @@ function cellValue(col: any, row: any) {
 .table-wrap{overflow:auto}
 table{width:100%;border-collapse:collapse}
 th,td{border:1px solid #0a3393;padding:8px}
-thead th{background: #000000
+thead th{background: #868686
 }
 .left{text-align:left}.right{text-align:right}.center{text-align:center}
 .empty{text-align:center;color:#777;padding:16px}
