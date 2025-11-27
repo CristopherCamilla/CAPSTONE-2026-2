@@ -5,7 +5,7 @@ ml_proyeccion_ventas_6m_rf_mysql_v4_modificado.py
 Predicción de ventas futuras (6 meses o más) usando Random Forest (modelo ML con estacionalidad mensual)
 MODIFICADO para predecir VENTA TOTAL en lugar de VENTA POR ARTÍCULO para corregir la subestimación.
 
-Autor: Cristopher + ChatGPT + Gemini
+Autor: Cristopher 
 """
 
 import warnings
@@ -29,7 +29,7 @@ class Config:
     sql_user: str = "patatas"
     sql_password: str = "Patatas2024@"
     sql_driver: str = "ODBC Driver 17 for SQL Server"
-    tabla_sql: str = "dbo.ventasA"
+    tabla_sql: str = "dbo.ventas"
     ruta_csv: str = "./datos/ventas.csv"
     horizonte_meses: int = 6
     # --- Conexión MySQL ---
@@ -77,7 +77,7 @@ def leer_datos(cfg: Config) -> pd.DataFrame:
     df["Cantidad"] = pd.to_numeric(df["Cantidad"], errors="coerce").fillna(0)
     # Asume que 'Cantidad' es la cantidad de pares. Las NCV se restan o se suman según cómo esté el dato de origen.
     # Se mantiene la lógica original: si es NCV (Nota de Crédito por Venta) se resta, sino se suma.
-    df["qty_signed"] = np.where(df["TipoDocumento"].astype(str).str.upper().str.strip() == "NCV", -df["Cantidad"], df["Cantidad"])
+    df["qty_signed"] = np.where(df["TipoDocumento"].astype(str).str.upper().str.strip() == "NCV", df["Cantidad"], df["Cantidad"])
     df = df[df["Nulas"].fillna(0) == 0]
     return df.reset_index(drop=True)
 
@@ -180,11 +180,12 @@ def entrenar_y_predecir_rf(df: pd.DataFrame, cfg: Config):
         venta_total_horizonte = np.sum(predicciones_finales) # Este es el total proyectado (ej. 400k)
         venta_prom_art = venta_total_horizonte / articulos if articulos > 0 else venta_total_horizonte
 
-        id_linea = f"{genero}_{cat}_{subcat}"
+        id_linea = f"2_{genero}_{cat}_{subcat}"
 
         # Tabla Total
         resultados.append({
             "id_linea": id_linea,
+            "empresa": 2, 
             "Color": 0,
             "Genero": genero,
             "Categoria": cat,
@@ -198,6 +199,7 @@ def entrenar_y_predecir_rf(df: pd.DataFrame, cfg: Config):
         for fecha, venta in zip(fechas_futuras, predicciones_finales):
             pred_detalle.append({
                 "id_linea": id_linea,
+                "empresa": 2,                
                 "Color": 0,
                 "Genero": genero,
                 "Categoria": cat,
