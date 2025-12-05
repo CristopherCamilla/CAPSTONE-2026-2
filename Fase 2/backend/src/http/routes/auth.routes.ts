@@ -1,4 +1,4 @@
-import type { FastifyPluginAsync, FastifyRequest } from 'fastify'
+import type { FastifyPluginAsync } from 'fastify'
 import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import { usuariosRepo } from '../../infra/usuariosRepo.js'
@@ -7,11 +7,6 @@ const LoginBody = z.object({
     email: z.email(),
     password: z.string().min(1),
 });
-
-function isHttps(req: FastifyRequest) {
-    const xf = String(req.headers['x-forwarded-proto'] || '').toLowerCase()
-    return req.protocol === 'https' || xf === 'https'
-}
 
 export const authRoutes: FastifyPluginAsync = async (app) => {
     app.post("/api/auth/login", async (req, reply) => {
@@ -80,7 +75,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
         if (!token) return { user: null };
 
         try {
-            const { sub } = await app.jwt.verify<{ sub: string; email: string; role: string }>(token);
+            const { sub } = app.jwt.verify<{ sub: string; email: string; role: string }>(token);
             const u = await usuariosRepo.findSafeById(Number(sub));
             if (!u) return { user: null };
 

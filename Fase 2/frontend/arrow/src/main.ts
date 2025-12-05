@@ -2,6 +2,9 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import './style.css'
 
+// Filtro de consola (solo desarrollo) - debe ir antes de otros imports
+import './utils/consoleFilter'
+
 import { createPinia } from 'pinia'
 import { router } from './router'
 

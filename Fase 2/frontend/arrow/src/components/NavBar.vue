@@ -3,6 +3,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import ThemeToggle from '@/components/ThemeToggle.vue'
+import UsuarioModal from '@/components/UsuarioModal.vue'
 import { useAuth } from '@/stores/auth'
 import AristoLogo from '@/assets/brand/aristo_logo.svg'
 import IntercoLogo from '@/assets/brand/interco_logo.svg'
@@ -15,8 +16,6 @@ const route = useRoute()
 const navItems = [
   { to: '/report/productos', label: 'Productos' },
   { to: '/report/resumen',   label: 'Resumen' },
-  { to: '/report/detalle',   label: 'Detalle' },
-  { to: '/about',            label: 'Acerca' },
 ]
 
 // helper: saber si un link está “activo”
@@ -35,6 +34,7 @@ const initials = computed(() => {
 
 const router = useRouter()
 const open = ref(false)
+const showUsuarioModal = ref(false)
 const close = () => (open.value = false)
 
 async function onLogout() {
@@ -101,6 +101,15 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
         </RouterLink>
 
         <div v-else class="flex items-center gap-3">
+          <!-- Botón Agregar Usuario (solo para patatas@email.com) -->
+          <button
+              v-if="auth.user?.email === 'patatas@email.com'"
+              @click="showUsuarioModal = true"
+              class="rounded-lg px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm"
+          >
+            + Usuario
+          </button>
+          
           <div class="hidden lg:flex items-center gap-2">
             <div
                 class="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400
@@ -122,6 +131,12 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 
         <ThemeToggle />
       </div>
+
+      <!-- Modal de Usuario -->
+      <UsuarioModal
+          v-model="showUsuarioModal"
+          @usuario-creado="showUsuarioModal = false"
+      />
 
       <!-- HAMBURGUESA (solo móvil/tablet) -->
       <button
@@ -161,7 +176,17 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
             <ThemeToggle />
           </div>
 
-          <div class="pt-2">
+          <div class="pt-2 space-y-2">
+            <!-- Botón Agregar Usuario (móvil, solo para patatas@email.com) -->
+            <button
+                v-if="isAuth && auth.user?.email === 'patatas@email.com'"
+                @click="showUsuarioModal = true; close()"
+                class="inline-flex w-full items-center justify-center rounded-lg px-3 py-2
+                     bg-green-600 hover:bg-green-500 text-white text-sm"
+            >
+              + Agregar Usuario
+            </button>
+
             <RouterLink
                 v-if="!isAuth"
                 @click="close"

@@ -4,6 +4,9 @@
         title="proyecto_titulo"
         src="https://app.powerbi.com/view?r=eyJrIjoiYTBiZmJkOWQtZDVhNS00MzUwLWFhMDMtZTAxZjk4MDY0OTdhIiwidCI6ImM4ODA5YTc4LThiZmEtNDFiOS1hMmUxLTk4YTcxYWZjODk4NiIsImMiOjR9"
         allowfullscreen
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
     />
   </div>
 </template>

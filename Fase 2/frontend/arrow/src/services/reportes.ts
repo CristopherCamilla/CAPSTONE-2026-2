@@ -38,7 +38,7 @@ export async function listarReportes(
     if (filters.categoria) params.categoria = filters.categoria;
     if (filters.subcategoria) params.subcategoria = filters.subcategoria;
 
-    console.log('Filtros para mandar parametros : ', params);
+    //console.log('Filtros para mandar parametros : ', params);
 
     const { data } = await http.get('/api/reportes', { params });
     return data as ReportListResult;

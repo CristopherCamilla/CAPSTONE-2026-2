@@ -5,14 +5,6 @@ import {useAuth } from "../stores/auth.ts";
 
 const routes = [
         {
-            path: '/',
-            redirect: { name: 'Login' },
-            // name: 'Home',
-            // component: () => import('../views/HomeView.vue'),
-            // alias: ['/home'],
-            // meta: { requiresAuth: false }
-        },
-        {
             path: '/login',
             name: 'Login',
             component: () => import('../views/LoginView.vue'),
@@ -34,12 +26,6 @@ const routes = [
                     path: 'resumen',
                     name: 'ReportResumen',
                     component: () => import('@/views/report/ResumenSub.vue'),
-                    meta: { keepAlive: true, requiresAuth: true }
-                },
-                {
-                    path: 'detalle',
-                    name: 'ReportDetalle',
-                    component: () => import('@/views/report/DetalleSub.vue'),
                     meta: { keepAlive: true, requiresAuth: true }
                 },
 
