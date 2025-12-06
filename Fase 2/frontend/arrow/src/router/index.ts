@@ -5,6 +5,10 @@ import {useAuth } from "../stores/auth.ts";
 
 const routes = [
         {
+            path: '/',
+            redirect: { name: 'Login' },
+        },
+        {
             path: '/login',
             name: 'Login',
             component: () => import('../views/LoginView.vue'),

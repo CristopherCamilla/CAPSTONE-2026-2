@@ -350,3 +350,5 @@ graph TB
 
 **Nota**: Estos diagramas muestran la comunicación real entre componentes. Los elementos marcados con ❌ o ⚠️ deberían ser eliminados o implementados según las recomendaciones del análisis.
 
+
+

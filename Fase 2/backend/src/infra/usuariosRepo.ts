@@ -104,4 +104,14 @@ export const usuariosRepo = {
         const { password, ...safe } = row as any
         return safe
     },
+
+    async findByUsuario(usuario: string) {
+        const [rows] = await pool.query<UsuarioRow[]>(
+            `SELECT id, nombre, apellido, usuario, email, password, rol, estado, fecha_registro, ultima_conexion
+             FROM usuarios
+             WHERE LOWER(TRIM(usuario)) = LOWER(TRIM(?))
+                 LIMIT 1`, [usuario]
+        );
+        return rows[0] ?? null;
+    },
 };

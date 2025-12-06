@@ -340,7 +340,7 @@ frontend/arrow/
 │  │              │      │              │      │              │ │
 │  │ LoginView    │─────▶│  auth.ts     │─────▶│  (no hay)    │ │
 │  │ ReportView   │      │  usuarios.ts │      │              │ │
-│  │ HomeView ❌  │      └──────────────┘      │  reportes.ts │ │
+│  │              │      └──────────────┘      │  reportes.ts │ │
 │  └──────────────┘             │              │  usuarios.ts │ │
 │         │                      │              └──────────────┘ │
 │         │                      │                      │         │
@@ -519,4 +519,6 @@ frontend/arrow/
 
 **Fecha de análisis**: 2025
 **Versión analizada**: Fase 2
+
+
 

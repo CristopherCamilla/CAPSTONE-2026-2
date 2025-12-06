@@ -211,6 +211,9 @@ async function handleSubmit() {
 
   loading.value = true
   errorMessage.value = ''
+  // Limpiar errores de campos específicos
+  errors.value.email = ''
+  errors.value.usuario = ''
 
   try {
     await usuariosService.create({
@@ -226,7 +229,23 @@ async function handleSubmit() {
     emit('usuario-creado')
     close()
   } catch (error: any) {
-    errorMessage.value = error?.message || 'Error al crear el usuario. Por favor, intente nuevamente.'
+    // Manejar errores específicos del backend
+    // El backend retorna { message, field } en el body cuando hay duplicados (409)
+    if (error?.status === 409) {
+      const responseData = error?.details || error?.response?.data || {}
+      const field = responseData.field
+      const message = responseData.message || error?.message || 'Ya está en uso'
+      
+      if (field === 'email') {
+        errors.value.email = message
+      } else if (field === 'usuario') {
+        errors.value.usuario = message
+      } else {
+        errorMessage.value = message
+      }
+    } else {
+      errorMessage.value = error?.message || 'Error al crear el usuario. Por favor, intente nuevamente.'
+    }
     console.error('Error creando usuario:', error)
   } finally {
     loading.value = false

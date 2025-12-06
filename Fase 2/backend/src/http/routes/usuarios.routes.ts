@@ -33,6 +33,27 @@ export async function usuariosRoutes(app: FastifyInstance) {
     app.post("/api/usuarios", async (req, reply) => {
         const parsed = UsuarioCreateSchema.safeParse(req.body);
         if (!parsed.success) return reply.code(400).send(parsed.error.flatten());
+        
+        // Validar que email no exista
+        const emailNormalizado = parsed.data.email.trim().toLowerCase();
+        const usuarioExistente = await usuariosRepo.findByEmail(emailNormalizado);
+        if (usuarioExistente) {
+            return reply.code(409).send({ 
+                message: 'El email ya está en uso',
+                field: 'email'
+            });
+        }
+        
+        // Validar que usuario no exista
+        const usuarioNormalizado = parsed.data.usuario.trim();
+        const usuarioDuplicado = await usuariosRepo.findByUsuario(usuarioNormalizado);
+        if (usuarioDuplicado) {
+            return reply.code(409).send({ 
+                message: 'El nombre de usuario ya está en uso',
+                field: 'usuario'
+            });
+        }
+        
         const hashed = await bcrypt.hash(parsed.data.password, 10);
         const created = await usuariosRepo.create({ ...parsed.data, password: hashed });
         const { password, ...safe } = created as any;

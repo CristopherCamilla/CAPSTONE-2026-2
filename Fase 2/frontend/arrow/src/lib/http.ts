@@ -31,7 +31,9 @@ http.interceptors.response.use(
                 "Error de red"
             );
             (apiErr as any).status = ax.response?.status;
-            (apiErr as any).details = ax.response?.data;
+            // Preservar toda la respuesta del backend para acceso a field, etc.
+            (apiErr as any).details = ax.response?.data || {};
+            (apiErr as any).response = ax.response; // Preservar respuesta completa
             return Promise.reject(apiErr);
         }
         return Promise.reject(error);
